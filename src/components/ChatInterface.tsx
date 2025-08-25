@@ -78,7 +78,6 @@ export const ChatInterface: React.FC = () => {
     };
     setMessages((p) => [...p, userMsg]);
 
-    // Limpiar textarea y mostrar spinner
     setInputValue("");
     setIsLoading(true);
 
@@ -137,13 +136,14 @@ export const ChatInterface: React.FC = () => {
 
   /* -------------------- RENDER -------------------- */
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background relative">
+    /* ---------- GRID LAYOUT (header, messages, footer) ---------- */
+    <div className="grid grid-rows-[auto_1fr_auto] h-screen overflow-hidden bg-background relative">
       {/* ==== BACKGROUNDS (fixed, no afectan al scroll) ==== */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
       {/* ==== HEADER (muy delgado) ==== */}
-      <header className="flex-none flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md">
+      <header className="flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md">
         {/* LOGO */}
         <img
           src={cfnLogo}
@@ -161,10 +161,10 @@ export const ChatInterface: React.FC = () => {
       </header>
 
       {/* ==== ÁREA DE MENSAJES (scrollable) ==== */}
-      <section className="flex-1 min-h-0 overflow-y-auto">
-        {/* ScrollArea (de shadcn) — solo necesita altura completa */}
+      <section className="overflow-y-auto">
+        {/* ScrollArea (shadcn) — ocupa todo el alto que le da la row del grid */}
         <ScrollArea className="h-full">
-          {/* Fondo degradado interno (no afecta al scroll) */}
+          {/* Fondo interno degradado */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
 
           <div className="relative px-4 sm:px-8 py-6">
@@ -176,10 +176,11 @@ export const ChatInterface: React.FC = () => {
         </ScrollArea>
       </section>
 
-      {/* ==== INPUT (pegado al fondo, sin scroll) ==== */}
+      {/* ==== INPUT (pegado al fondo) ==== */}
       <footer
-        className="flex-none p-2 sm:p-4 bg-background/95 backdrop-blur-xl"
+        className="bg-background/95 backdrop-blur-xl p-2 sm:p-4"
         style={{
+          /* iOS safe‑area para que el teclado no tape el input */
           paddingBottom: `calc(env(safe-area-inset-bottom) + 1rem)`,
         }}
       >

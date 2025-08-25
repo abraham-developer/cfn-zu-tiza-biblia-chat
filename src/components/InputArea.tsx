@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSessionId } from "@/hooks/useSessionId";
 
 interface InputAreaProps {
   value: string;
   onChange: (value: string) => void;
-  onSend: () => void;
+  /** Ahora recibe el `sessionId` generado por el hook */
+  onSend: (sessionId: string) => void;
   onKeyPress: (e: React.KeyboardEvent) => void;
   isLoading: boolean;
   inputRef: React.RefObject<HTMLTextAreaElement>;
@@ -25,6 +27,7 @@ export const InputArea: React.FC<InputAreaProps> = ({
 }) => {
   const MAX_CHARS = 200;
   const [charCount, setCharCount] = useState(0);
+  const sessionId = useSessionId();   // <-- garantizamos que exista
 
   const countChars = (t: string) => t.length;
   useEffect(() => {
@@ -39,19 +42,26 @@ export const InputArea: React.FC<InputAreaProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (value.trim() && charCount <= MAX_CHARS) onSend();
+      if (value.trim() && charCount <= MAX_CHARS) {
+        // Enviamos siempre con el sessionId ya creado
+        onSend(sessionId);
+      }
     }
     onKeyPress(e);
   };
 
+  const handleButtonClick = () => {
+    if (value.trim() && charCount <= MAX_CHARS) {
+      onSend(sessionId);
+    }
+  };
+
   return (
     <div className="relative">
-      {/* ---------- CONTENEDOR PRINCIPAL (compacto) ---------- */}
       <div className="rounded-3xl p-3 sm:p-4 shadow-2xl border border-white/20 bg-gray-800 relative overflow-hidden">
-        {/* Gradiente opcional */}
         <div className="absolute inset-0 bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5 pointer-events-none"></div>
 
-        {/* ---------- CONTADOR DE CARACTERES (ARRIBA) ---------- */}
+        {/* CONTADOR DE CARÁCTERES */}
         <div className="flex justify-end mb-1 text-xs sm:text-sm">
           <span
             className={charCount > MAX_CHARS ? "text-red-400" : "text-green-400"}
@@ -60,9 +70,9 @@ export const InputArea: React.FC<InputAreaProps> = ({
           </span>
         </div>
 
-        {/* ---------- INPUT + BOTÓN ---------- */}
+        {/* INPUT + BOTÓN */}
         <div className="flex items-end gap-2 sm:gap-3">
-          {/* ---------- TEXTAREA ---------- */}
+          {/* TEXTAREA */}
           <div className="flex-1">
             <textarea
               ref={inputRef}
@@ -84,9 +94,9 @@ export const InputArea: React.FC<InputAreaProps> = ({
             />
           </div>
 
-          {/* ---------- BOTÓN ENVIAR ---------- */}
+          {/* BOTÓN ENVIAR */}
           <Button
-            onClick={onSend}
+            onClick={handleButtonClick}
             disabled={!value.trim() || isLoading || charCount > MAX_CHARS}
             className={`
               rounded-lg px-4 py-2 sm:px-5 sm:py-3

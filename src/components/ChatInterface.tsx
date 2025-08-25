@@ -155,9 +155,7 @@ export const ChatInterface: React.FC = () => {
         />
 
         {/* TEXTO CENTRAL */}
-        <span className="text-sm sm:text-base font-medium text-foreground">
-          AI – CFN
-        </span>
+      
 
         {/* MENÚ DE HERRAMIENTAS */}
         <ToolsMenu onToolSelect={handleToolSelect} />

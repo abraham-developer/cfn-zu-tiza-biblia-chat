@@ -13,7 +13,7 @@ interface InputAreaProps {
 }
 
 /* --------------------------------------------------------------
-   INPUT AREA – contador arriba del textarea (no cubre el botón)
+   INPUT AREA – contador **arriba** del textarea + botón
    -------------------------------------------------------------- */
 export const InputArea: React.FC<InputAreaProps> = ({
   value,
@@ -51,22 +51,19 @@ export const InputArea: React.FC<InputAreaProps> = ({
         {/* Gradiente opcional */}
         <div className="absolute inset-0 bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5 pointer-events-none"></div>
 
-        {/* ------------------------------------------------------------------
-            WRAP: contiene textarea + contador (absolute) + botón
-            ------------------------------------------------------------------ */}
-        <div className="flex items-end gap-2 sm:gap-3">
-          {/* ==================== TEXTAREA + CONTADOR ==================== */}
-          <div className="relative flex-1">
-            {/* ----- CONTADOR (arriba‑derecha del textarea) ----- */}
-            <div className="absolute top-0 right-0 text-xs sm:text-sm">
-              <span
-                className={charCount > MAX_CHARS ? "text-red-400" : "text-green-400"}
-              >
-                {charCount} / {MAX_CHARS}
-              </span>
-            </div>
+        {/* ---------- CONTADOR DE CARACTERES (ARRIBA) ---------- */}
+        <div className="flex justify-end mb-1 text-xs sm:text-sm">
+          <span
+            className={charCount > MAX_CHARS ? "text-red-400" : "text-green-400"}
+          >
+            {charCount} / {MAX_CHARS}
+          </span>
+        </div>
 
-            {/* ----- TEXTAREA ----- */}
+        {/* ---------- INPUT + BOTÓN ---------- */}
+        <div className="flex items-end gap-2 sm:gap-3">
+          {/* ---------- TEXTAREA ---------- */}
+          <div className="flex-1">
             <textarea
               ref={inputRef}
               value={value}
@@ -84,11 +81,10 @@ export const InputArea: React.FC<InputAreaProps> = ({
                 transition-all duration-300 font-medium
               `}
               disabled={isLoading}
-              style={{ paddingRight: "4rem" }} // espacio para que el contador no tape texto
             />
           </div>
 
-          {/* ==================== BOTÓN ENVIAR ==================== */}
+          {/* ---------- BOTÓN ENVIAR ---------- */}
           <Button
             onClick={onSend}
             disabled={!value.trim() || isLoading || charCount > MAX_CHARS}

@@ -5,6 +5,8 @@ import { ToolsMenu } from "./ToolsMenu";
 import { MessageDisplay } from "./MessageDisplay";
 import { InputArea } from "./InputArea";
 import cfnLogo from "@/assets/CFN.jpg";
+import { useSessionUuid } from "@/hooks/useSessionUuid";
+import { postToAI } from "@/api/ai";
 
 interface Message {
   id: string;
@@ -14,24 +16,12 @@ interface Message {
 }
 
 /* ------------------------------------------------------------------
-   Helper: llama al webhook y devuelve texto plano.
+   ChatInterface – ahora usa el UUID de sesión
    ------------------------------------------------------------------ */
-const postToAI = async (mensaje: string): Promise<string> => {
-  const url =
-    "https://aan8nwebhook.abrahamdev.net/webhook/f09672cd-eb0f-4c69-8113-4f4bc7d4ea96";
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ Mensaje: mensaje }),
-  });
-  if (!resp.ok) {
-    const txt = await resp.text();
-    throw new Error(`API error ${resp.status}: ${txt}`);
-  }
-  return await resp.text(); // texto plano
-};
-
 export const ChatInterface: React.FC = () => {
+  /* -------------------- SESSION -------------------- */
+  const { sessionUuid, resetSession } = useSessionUuid();
+
   /* -------------------- ESTADO -------------------- */
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -60,6 +50,25 @@ export const ChatInterface: React.FC = () => {
   useEffect(() => scrollToBottom(), [messages]);
   useEffect(() => inputRef.current?.focus(), []);
 
+  /* -------------------- REINICIO DE SESIÓN --------------------
+     Si la sesión se reinicia (p.ej. usuario cambió la query‑string), 
+     limpiamos la conversación para que empiece de cero.
+   -------------------------------------------------------------------- */
+  useEffect(() => {
+    // Cuando `sessionUuid` cambie a `null` (solo en caso de reset) borramos todo
+    if (!sessionUuid) {
+      setMessages([
+        {
+          id: "1",
+          content:
+            "Bienvenido a CFN AI, soy hermano David bot ¿Cómo puedo acompañarte en tu caminar con Cristo hoy?",
+          type: "ai",
+          timestamp: new Date(),
+        },
+      ]);
+    }
+  }, [sessionUuid]);
+
   /* -------------------- ENVÍO DE MENSAJE -------------------- */
   const handleSendMessage = async () => {
     if (sendingRef.current || isLoading) return;
@@ -73,20 +82,19 @@ export const ChatInterface: React.FC = () => {
       type: "user",
       timestamp: new Date(),
     };
-    setMessages((p) => [...p, userMsg]);
-
+    setMessages((prev) => [...prev, userMsg]);
     setInputValue("");
     setIsLoading(true);
 
     try {
-      const aiReply = await postToAI(userMsg.content);
+      const aiReply = await postToAI(userMsg.content, sessionUuid);
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         content: aiReply,
         type: "ai",
         timestamp: new Date(),
       };
-      setMessages((p) => [...p, aiMsg]);
+      setMessages((prev) => [...prev, aiMsg]);
     } catch (e: any) {
       console.error("Error al contactar la IA:", e);
       const errMsg: Message = {
@@ -96,7 +104,7 @@ export const ChatInterface: React.FC = () => {
         type: "ai",
         timestamp: new Date(),
       };
-      setMessages((p) => [...p, errMsg]);
+      setMessages((prev) => [...prev, errMsg]);
     } finally {
       setIsLoading(false);
       sendingRef.current = false;
@@ -112,7 +120,7 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
-  /* -------------------- MAPEO DE HERRAMIENTAS -------------------- */
+  /* -------------------- HERRAMIENTAS -------------------- */
   const handleToolSelect = (toolId: string) => {
     const toolMessages: Record<string, string> = {
       "verse-search": "Quiero buscar versículos bíblicos específicos",
@@ -121,6 +129,7 @@ export const ChatInterface: React.FC = () => {
       community: "Me interesa conectar con la comunidad",
       "create-images": "Quiero crear una imagen basada en la Biblia",
     };
+
     const txt = toolMessages[toolId];
     if (txt) {
       setInputValue(txt);
@@ -132,27 +141,21 @@ export const ChatInterface: React.FC = () => {
 
   /* -------------------- RENDER -------------------- */
   return (
-    /** Contenedor principal: ocupa toda la pantalla y usa flex‑column */
     <div className="relative flex flex-col h-screen bg-background overflow-hidden">
-
-      {/* ==== BACKGROUNDS (fixed, no afectan al layout) ==== */}
+      {/* -------------------- BACKGROUNDS -------------------- */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
-      {/* ==== HEADER – FIXED (siempre visible) ==== */}
+      {/* -------------------- HEADER -------------------- */}
       <header className="fixed top-0 left-0 right-0 flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md z-10 h-14">
         <img src={cfnLogo} alt="CFN Zumpango Tizayuca" className="h-9 sm:h-11 w-auto" />
         <ToolsMenu onToolSelect={handleToolSelect} />
       </header>
 
-      {/* ==== MENSAJES – SCROLL ONLY HERE ==== */}
-      {/*   pt-14  → espacio del header (h-14) */}
-      {/*   pb-[calc(5rem + env(safe-area-inset-bottom))] → espacio del footer (h-20 = 5rem) + notch */}
+      {/* -------------------- SCROLLABLE MESSAGES -------------------- */}
       <section className="flex-1 min-h-0 overflow-y-auto pt-14 pb-[calc(5rem_+_env(safe-area-inset-bottom))]">
         <ScrollArea className="h-full">
-          {/* Fondo interno (solo visual) */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none"></div>
-
           <div className="relative px-4 sm:px-8 py-6">
             <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
               <MessageDisplay messages={messages} isLoading={isLoading} />
@@ -162,18 +165,14 @@ export const ChatInterface: React.FC = () => {
         </ScrollArea>
       </section>
 
-      {/* ==== FOOTER – FIXED (siempre visible) ==== */}
+      {/* -------------------- FOOTER -------------------- */}
       <footer
         className="fixed bottom-0 left-0 right-0 flex items-center bg-background/95 backdrop-blur-xl z-10 h-20 px-2"
         style={{
-          /* Espacio superior para que el textarea no quede pegado al borde */
           paddingTop: "0.5rem",
-          /* Espacio inferior para iOS notch + margen */
           paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
         }}
       >
-        {/*  <div className="max-w-5xl mx-auto px-2">  <-- QUITADO */}
-        {/*  El contenedor anterior limitaba el ancho.  Lo eliminamos y dejamos que el InputArea ocupe el 100 % */}
         <div className="w-full">
           <InputArea
             value={inputValue}
@@ -184,7 +183,6 @@ export const ChatInterface: React.FC = () => {
             inputRef={inputRef}
           />
         </div>
-        {/*  </div> */}
       </footer>
     </div>
   );

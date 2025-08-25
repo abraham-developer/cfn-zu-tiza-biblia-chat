@@ -1,20 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CFN Zumpango Tizayuca - Asistente Bíblico AI</title>
-    <meta name="description" content="Chat con inteligencia artificial para preguntas bíblicas - CFN Zumpango Tizayuca" />
-    <meta name="author" content="CFN Zumpango Tizayuca" />
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Preconexiones a Google Fonts (tus fuentes) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
- 
-  </head>
+  <!-- ==== 1️⃣ FAVICON DE FUEGO (SVG inline, sin archivo externo) ==== -->
+  <!-- Nota: la cadena después de `data:image/svg+xml,` está URL‑encoded -->
+  <link rel="icon"
+        type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FF4500%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%202c0%2010-6%2013-6%2017a6%206%200%20012%200c0-4-6-7-6-17z%22%20/%3E%3C/svg%3E"
+        id="favicon-fire">
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- ==== 2️⃣ Versión para Apple (iOS) ==== -->
+  <link rel="apple-touch-icon"
+        sizes="180x180"
+        href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FF4500%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%202c0%2010-6%2013-6%2017a6%206%200%20012%200c0-4-6-7-6-17z%22%20/%3E%3C/svg%3E"
+        id="apple-icon-fire">
+
+  <!-- ==== 3️⃣ (Opcional) Android / Web‑App ==== -->
+  <link rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FF4500%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%202c0%2010-6%2013-6%2017a6%206%200%20012%200c0-4-6-7-6-17z%22%20/%3E%3C/svg%3E"
+        id="android-icon-fire">
+
+  <!-- ==== 4️⃣ No‑caché para el favicon (meta‑tags) ==== -->
+  <!-- Estas meta‑tags indican al navegador que intente no guardar en caché el icono -->
+  <meta http‑equiv="Cache‑Control" content="no‑store, no‑cache, must‑revalidate, max‑age=0">
+  <meta http‑equiv="Pragma" content="no‑cache">
+  <meta http‑equiv="Expires" content="0">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CFN Zumpango Tizayuca - Asistente Bíblico AI</title>
+  <meta name="description"
+        content="Chat con inteligencia artificial para preguntas bíblicas - CFN Zumpango Tizayuca" />
+  <meta name="author" content="CFN Zumpany Tizayuca" />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
 </html>

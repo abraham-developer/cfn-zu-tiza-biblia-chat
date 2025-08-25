@@ -12,6 +12,9 @@ interface InputAreaProps {
   inputRef: React.RefObject<HTMLTextAreaElement>;
 }
 
+/* --------------------------------------------------------------
+   INPUT AREA – contenedor compacto, contador en esquina superior‑derecha
+   -------------------------------------------------------------- */
 export const InputArea: React.FC<InputAreaProps> = ({
   value,
   onChange,
@@ -28,8 +31,8 @@ export const InputArea: React.FC<InputAreaProps> = ({
     const c = countChars(value);
     setCharCount(c);
     if (c > MAX_CHARS) {
-      const limited = value.slice(0, MAX_CHARS);
-      if (limited !== value) onChange(limited);
+      const lim = value.slice(0, MAX_CHARS);
+      if (lim !== value) onChange(lim);
     }
   }, [value]);
 
@@ -43,63 +46,59 @@ export const InputArea: React.FC<InputAreaProps> = ({
 
   return (
     <div className="relative">
-      {/* ---------- CONTENEDOR (más compacto) ---------- */}
+      {/* ---------- CONTENEDOR (compacto) ---------- */}
       <div className="rounded-3xl p-3 sm:p-4 shadow-2xl border border-white/20 bg-gray-800 relative overflow-hidden">
         {/* Gradiente opcional */}
         <div className="absolute inset-0 bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5 pointer-events-none"></div>
 
-        <div className="relative z-10">
-          {/* ---------- INPUT + BOTÓN ---------- */}
-          <div className="flex gap-2 items-end mb-2">
-            {/* ---------- TEXTAREA ---------- */}
-            <div className="flex-1 relative">
-              <textarea
-                ref={inputRef}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Pregunta ..."
-                rows={1}
-                maxLength={MAX_CHARS}
-                className={`
-                  block w-full resize-none pr-14 py-2 sm:py-3
-                  text-sm sm:text-base text-center
-                  rounded-lg border-0 bg-white/5 backdrop-blur-sm
-                  placeholder:italic placeholder:text-gray-400/80
-                  text-foreground focus:ring-2 focus:ring-accent/50
-                  transition-all duration-300 font-medium
-                `}
-                disabled={isLoading}
-              />
-            </div>
-
-            {/* ---------- BOTÓN ENVIAR ---------- */}
-            <Button
-              onClick={onSend}
-              disabled={!value.trim() || isLoading || charCount > MAX_CHARS}
+        {/* ---------- INPUT + BOTÓN ---------- */}
+        <div className="flex items-end gap-2 sm:gap-3">
+          {/* TEXTAREA */}
+          <div className="flex-1">
+            <textarea
+              ref={inputRef}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Pregunta ..."
+              rows={1}
+              maxLength={MAX_CHARS}
               className={`
-                rounded-lg px-4 py-2 sm:px-5 sm:py-3
-                bg-gradient-to-r from-primary via-primary/90 to-primary/80
-                hover:from-primary/90 hover:via-primary/80 hover:to-primary/70
-                border border-primary/50 shadow-xl shadow-primary/30
-                transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40
-                hover:scale-105 disabled:opacity-50 disabled:hover:scale-100
-                group relative overflow-hidden
+                block w-full resize-none pr-14 py-2 sm:py-3
+                text-sm sm:text-base text-center
+                rounded-lg border-0 bg-white/5 backdrop-blur-sm
+                placeholder:italic placeholder:text-gray-400/80
+                text-foreground focus:ring-2 focus:ring-accent/50
+                transition-all duration-300 font-medium
               `}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <Send className="w-4 h-4 relative z-10" />
-            </Button>
+              disabled={isLoading}
+            />
           </div>
 
-          {/* ---------- CONTADOR DE CARACTERES (más chico) ---------- */}
-          <div className="flex justify-end mb-1 text-xs">
-            <span
-              className={charCount > MAX_CHARS ? "text-red-400" : "text-green-400"}
-            >
-              {charCount} / {MAX_CHARS} caracteres
-            </span>
-          </div>
+          {/* BOTÓN ENVIAR */}
+          <Button
+            onClick={onSend}
+            disabled={!value.trim() || isLoading || charCount > MAX_CHARS}
+            className={`
+              rounded-lg px-4 py-2 sm:px-5 sm:py-3
+              bg-gradient-to-r from-primary via-primary/90 to-primary/80
+              hover:from-primary/90 hover:via-primary/80 hover:to-primary/70
+              border border-primary/50 shadow-xl shadow-primary/30
+              transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40
+              hover:scale-105 disabled:opacity-50 disabled:hover:scale-100
+              group relative overflow-hidden
+            `}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <Send className="w-4 h-4 relative z-10" />
+          </Button>
+        </div>
+
+        {/* ---------- CONTADOR DE CARACTERES (posición absoluta) ---------- */}
+        <div className="absolute top-2 right-3 text-xs sm:text-sm">
+          <span className={charCount > MAX_CHARS ? "text-red-400" : "text-green-400"}>
+            {charCount} / {MAX_CHARS}
+          </span>
         </div>
       </div>
     </div>

@@ -78,6 +78,7 @@ export const ChatInterface: React.FC = () => {
     };
     setMessages((p) => [...p, userMsg]);
 
+    // Limpiar textarea y mostrar spinner
     setInputValue("");
     setIsLoading(true);
 
@@ -136,19 +137,21 @@ export const ChatInterface: React.FC = () => {
 
   /* -------------------- RENDER -------------------- */
   return (
-    /* ---------- GRID LAYOUT (header, messages, footer) ---------- */
-    <div className="grid grid-rows-[auto_1fr_auto] h-screen overflow-hidden bg-background relative">
-      {/* ==== BACKGROUNDS (fixed, no afectan al scroll) ==== */}
+    <div className="relative h-screen bg-background overflow-hidden">
+      {/* ==== FONDOS (fixed, sin afectar layout) ==== */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
-      {/* ==== HEADER (muy delgado) ==== */}
-      <header className="flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md">
+      {/* ==== HEADER (fixed‑top) ==== */}
+      <header
+        className="fixed top-0 left-0 right-0 flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md z-10"
+        style={{ height: "calc(env(safe-area-inset-top) + 3rem)" }} // 3rem ≈ 48px
+      >
         {/* LOGO */}
         <img
           src={cfnLogo}
           alt="CFN Zumpango Tizayuca"
-          className="h-8 sm:h-10 w-auto"
+          className="h-9 sm:h-11 w-auto"
         />
 
         {/* TEXTO CENTRAL */}
@@ -160,31 +163,17 @@ export const ChatInterface: React.FC = () => {
         <ToolsMenu onToolSelect={handleToolSelect} />
       </header>
 
-      {/* ==== ÁREA DE MENSAJES (scrollable) ==== */}
-      <section className="overflow-y-auto">
-        {/* ScrollArea (shadcn) — ocupa todo el alto que le da la row del grid */}
-        <ScrollArea className="h-full">
-          {/* Fondo interno degradado */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
-
-          <div className="relative px-4 sm:px-8 py-6">
-            <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
-              <MessageDisplay messages={messages} isLoading={isLoading} />
-              <div ref={messagesEndRef} />
-            </div>
-          </div>
-        </ScrollArea>
-      </section>
-
-      {/* ==== INPUT (pegado al fondo) ==== */}
+      {/* ==== FOOTER (fixed‑bottom) ==== */}
       <footer
-        className="bg-background/95 backdrop-blur-xl p-2 sm:p-4"
+        className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl z-10"
         style={{
-          /* iOS safe‑area para que el teclado no tape el input */
-          paddingBottom: `calc(env(safe-area-inset-bottom) + 1rem)`,
+          /* Altura final del footer (incluye safe‑area inferior) */
+          height: "calc(env(safe-area-inset-bottom) + 4rem)",
+          paddingTop: "0.5rem",
+          paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
         }}
       >
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto px-2">
           <InputArea
             value={inputValue}
             onChange={setInputValue}
@@ -195,6 +184,28 @@ export const ChatInterface: React.FC = () => {
           />
         </div>
       </footer>
+
+      {/* ==== CONTENEDOR DE MENSAJES (scrollable) ==== */}
+      <section
+        className="absolute left-0 right-0 overflow-y-auto"
+        style={{
+          // top = altura del header, bottom = altura del footer
+          top: "calc(env(safe-area-inset-top) + 3rem)",
+          bottom: "calc(env(safe-area-inset-bottom) + 4rem)",
+        }}
+      >
+        <ScrollArea className="h-full">
+          {/* Fondo interno degradado (solo visual) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
+
+          <div className="relative px-4 sm:px-8 py-6">
+            <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
+              <MessageDisplay messages={messages} isLoading={isLoading} />
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+        </ScrollArea>
+      </section>
     </div>
   );
 };

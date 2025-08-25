@@ -8,35 +8,51 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Church-inspired color palette */
+    --background: 240 15% 98%;
+    --foreground: 220 20% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 20% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 20% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Deep spiritual blue */
+    --primary: 220 60% 25%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Warm golden accent */
+    --secondary: 45 85% 88%;
+    --secondary-foreground: 220 60% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 10% 96%;
+    --muted-foreground: 220 15% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Divine gold */
+    --accent: 45 95% 65%;
+    --accent-foreground: 220 60% 25%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 240 15% 92%;
+    --input: 240 15% 96%;
+    --ring: 220 60% 25%;
 
-    --radius: 0.5rem;
+    /* Chat-specific colors */
+    --chat-bg: 240 20% 97%;
+    --user-message: 220 60% 25%;
+    --ai-message: 0 0% 100%;
+    --user-message-foreground: 0 0% 98%;
+    --ai-message-foreground: 220 20% 15%;
+
+    /* Gradients */
+    --gradient-divine: linear-gradient(135deg, hsl(220 60% 35%), hsl(220 60% 25%));
+    --gradient-golden: linear-gradient(135deg, hsl(45 95% 70%), hsl(45 85% 60%));
+    --gradient-peaceful: linear-gradient(180deg, hsl(240 15% 98%), hsl(240 20% 97%));
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 

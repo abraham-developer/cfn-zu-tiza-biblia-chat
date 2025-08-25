@@ -146,8 +146,8 @@ export const ChatInterface: React.FC = () => {
       </header>
 
       {/* ==== MENSAJES – SCROLL ONLY HERE ==== */}
-      {/*  pt-14  → espacio del header (h-14) */}
-      {/*  pb-[calc(5rem + env(safe-area-inset-bottom))] → espacio del footer (h-20 = 5rem) + notch */}
+      {/*   pt-14  → espacio del header (h-14) */}
+      {/*   pb-[calc(5rem + env(safe-area-inset-bottom))] → espacio del footer (h-20 = 5rem) + notch */}
       <section className="flex-1 min-h-0 overflow-y-auto pt-14 pb-[calc(5rem_+_env(safe-area-inset-bottom))]">
         <ScrollArea className="h-full">
           {/* Fondo interno (solo visual) */}
@@ -172,14 +172,19 @@ export const ChatInterface: React.FC = () => {
           paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
         }}
       >
-        <InputArea
-          value={inputValue}
-          onChange={setInputValue}
-          onSend={handleSendMessage}
-          onKeyPress={handleKeyPress}
-          isLoading={isLoading}
-          inputRef={inputRef}
-        />
+        {/*  <div className="max-w-5xl mx-auto px-2">  <-- QUITADO */}
+        {/*  El contenedor anterior limitaba el ancho.  Lo eliminamos y dejamos que el InputArea ocupe el 100 % */}
+        <div className="w-full">
+          <InputArea
+            value={inputValue}
+            onChange={setInputValue}
+            onSend={handleSendMessage}
+            onKeyPress={handleKeyPress}
+            isLoading={isLoading}
+            inputRef={inputRef}
+          />
+        </div>
+        {/*  </div> */}
       </footer>
     </div>
   );

@@ -8,51 +8,51 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Church-inspired color palette */
-    --background: 240 15% 98%;
-    --foreground: 220 20% 15%;
+    /* Glassmorphism color palette */
+    --background: 225 15% 8%;
+    --foreground: 225 5% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 15%;
+    --card: 225 15% 10%;
+    --card-foreground: 225 5% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 15%;
+    --popover: 225 15% 10%;
+    --popover-foreground: 225 5% 95%;
 
-    /* Deep spiritual blue */
-    --primary: 220 60% 25%;
-    --primary-foreground: 0 0% 98%;
+    /* Deep spiritual blue with transparency */
+    --primary: 220 70% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Warm golden accent */
-    --secondary: 45 85% 88%;
-    --secondary-foreground: 220 60% 25%;
+    /* Warm golden accent with glass effect */
+    --secondary: 225 15% 15%;
+    --secondary-foreground: 225 5% 90%;
 
-    --muted: 240 10% 96%;
-    --muted-foreground: 220 15% 50%;
+    --muted: 225 15% 12%;
+    --muted-foreground: 225 10% 60%;
 
-    /* Divine gold */
-    --accent: 45 95% 65%;
-    --accent-foreground: 220 60% 25%;
+    /* Divine glass gold */
+    --accent: 45 95% 60%;
+    --accent-foreground: 225 15% 10%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 15% 92%;
-    --input: 240 15% 96%;
-    --ring: 220 60% 25%;
+    --border: 225 15% 20%;
+    --input: 225 15% 15%;
+    --ring: 220 70% 45%;
 
-    /* Chat-specific colors */
-    --chat-bg: 240 20% 97%;
-    --user-message: 220 60% 25%;
-    --ai-message: 0 0% 100%;
-    --user-message-foreground: 0 0% 98%;
-    --ai-message-foreground: 220 20% 15%;
+    /* Glass morphism specific colors */
+    --glass-bg: 225 15% 15%;
+    --glass-border: 225 20% 25%;
+    --glass-shadow: 0 0 0;
+    
+    /* Chat-specific glass colors */
+    --chat-bg: 225 15% 8%;
+    --user-message: 220 70% 45%;
+    --ai-message: 225 15% 12%;
+    --user-message-foreground: 0 0% 100%;
+    --ai-message-foreground: 225 5% 95%;
 
-    /* Gradients */
-    --gradient-divine: linear-gradient(135deg, hsl(220 60% 35%), hsl(220 60% 25%));
-    --gradient-golden: linear-gradient(135deg, hsl(45 95% 70%), hsl(45 85% 60%));
-    --gradient-peaceful: linear-gradient(180deg, hsl(240 15% 98%), hsl(240 20% 97%));
-
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -116,6 +116,65 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter antialiased;
+    background: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(120, 119, 198, 0.3), transparent),
+                linear-gradient(180deg, hsl(var(--background)), hsl(var(--background)));
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-glass-bg/40 backdrop-blur-xl border border-glass-border/50;
+  }
+  
+  .glass-card {
+    @apply bg-card/30 backdrop-blur-lg border border-white/10 shadow-2xl;
+  }
+  
+  .glass-input {
+    @apply bg-white/5 backdrop-blur-sm border border-white/20 placeholder:text-white/60;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6), 0 0 60px rgba(59, 130, 246, 0.3);
   }
 }

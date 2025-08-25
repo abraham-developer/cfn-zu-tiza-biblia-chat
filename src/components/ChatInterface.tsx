@@ -1,5 +1,6 @@
 // src/components/ChatInterface.tsx
 import React, { useState, useRef, useEffect } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToolsMenu } from "./ToolsMenu";
 import { MessageDisplay } from "./MessageDisplay";
 import { InputArea } from "./InputArea";
@@ -27,7 +28,7 @@ const postToAI = async (mensaje: string): Promise<string> => {
     const txt = await resp.text();
     throw new Error(`API error ${resp.status}: ${txt}`);
   }
-  return await resp.text();
+  return await resp.text(); // texto plano
 };
 
 export const ChatInterface: React.FC = () => {
@@ -103,6 +104,7 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
+  /* -------------------- ENTER → ENVIAR -------------------- */
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -110,7 +112,7 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
-  /* -------------------- HERRAMDAMIENTAS -------------------- */
+  /* -------------------- MAPEO DE HERRAMIENTAS -------------------- */
   const handleToolSelect = (toolId: string) => {
     const toolMessages: Record<string, string> = {
       "verse-search": "Quiero buscar versículos bíblicos específicos",
@@ -123,37 +125,50 @@ export const ChatInterface: React.FC = () => {
     if (txt) {
       setInputValue(txt);
       inputRef.current?.focus();
+    } else {
+      console.warn(`Tool id "${toolId}" no tiene mensaje asociado`);
     }
   };
 
   /* -------------------- RENDER -------------------- */
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background relative">
-      {/* ==== BACKGROUNDS (fixed) ==== */}
+    /** Contenedor principal: ocupa toda la pantalla y usa flex‑column */
+    <div className="relative flex flex-col h-screen bg-background overflow-hidden">
+
+      {/* ==== BACKGROUNDS (fixed, no afectan al layout) ==== */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
-      {/* ==== HEADER (altura fija) ==== */}
-      <header className="flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md h-14">
-        <img src={cfnLogo} alt="CFN" className="h-9 sm:h-11 w-auto" />
+      {/* ==== HEADER – FIXED (siempre visible) ==== */}
+      <header className="fixed top-0 left-0 right-0 flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md z-10 h-14">
+        <img src={cfnLogo} alt="CFN Zumpango Tizayuca" className="h-9 sm:h-11 w-auto" />
         <ToolsMenu onToolSelect={handleToolSelect} />
       </header>
 
-      {/* ==== MENSAJES (scroll interno) ==== */}
-      <section className="flex-1 overflow-y-auto">
-        <div className="relative px-4 sm:px-8 py-6 h-full">
-          <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
-            <MessageDisplay messages={messages} isLoading={isLoading} />
-            <div ref={messagesEndRef} />
+      {/* ==== MENSAJES – SCROLL ONLY HERE ==== */}
+      {/*  pt-14  → espacio del header (h-14) */}
+      {/*  pb-[calc(5rem + env(safe-area-inset-bottom))] → espacio del footer (h-20 = 5rem) + notch */}
+      <section className="flex-1 min-h-0 overflow-y-auto pt-14 pb-[calc(5rem_+_env(safe-area-inset-bottom))]">
+        <ScrollArea className="h-full">
+          {/* Fondo interno (solo visual) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none"></div>
+
+          <div className="relative px-4 sm:px-8 py-6">
+            <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
+              <MessageDisplay messages={messages} isLoading={isLoading} />
+              <div ref={messagesEndRef} />
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       </section>
 
-      {/* ==== FOOTER (input, altura fija) ==== */}
+      {/* ==== FOOTER – FIXED (siempre visible) ==== */}
       <footer
-        className="bg-background/95 backdrop-blur-xl h-20 flex items-center px-2"
+        className="fixed bottom-0 left-0 right-0 flex items-center bg-background/95 backdrop-blur-xl z-10 h-20 px-2"
         style={{
+          /* Espacio superior para que el textarea no quede pegado al borde */
           paddingTop: "0.5rem",
+          /* Espacio inferior para iOS notch + margen */
           paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
         }}
       >

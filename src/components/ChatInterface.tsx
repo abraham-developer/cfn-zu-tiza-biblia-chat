@@ -19,13 +19,11 @@ interface Message {
 const postToAI = async (mensaje: string): Promise<string> => {
   const url =
     "https://aan8nwebhook.abrahamdev.net/webhook/f09672cd-eb0f-4c69-8113-4f4bc7d4ea96";
-
   const resp = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ Mensaje: mensaje }),
   });
-
   if (!resp.ok) {
     const txt = await resp.text();
     throw new Error(`API error ${resp.status}: ${txt}`);
@@ -50,14 +48,11 @@ export const ChatInterface: React.FC = () => {
   /* -------------------- REFS -------------------- */
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const sendingRef = useRef(false); // flag síncrono
+  const sendingRef = useRef(false);
 
   /* -------------------- SCROLL / FOCUS -------------------- */
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   };
   useEffect(() => scrollToBottom(), [messages]);
   useEffect(() => inputRef.current?.focus(), []);
@@ -69,7 +64,6 @@ export const ChatInterface: React.FC = () => {
 
     sendingRef.current = true;
 
-    // Mensaje del usuario
     const userMsg: Message = {
       id: Date.now().toString(),
       content: inputValue,
@@ -78,13 +72,11 @@ export const ChatInterface: React.FC = () => {
     };
     setMessages((p) => [...p, userMsg]);
 
-    // Limpiar textarea + spinner
     setInputValue("");
     setIsLoading(true);
 
     try {
       const aiReply = await postToAI(userMsg.content);
-      if (!sendingRef.current) return; // safety
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         content: aiReply,
@@ -137,28 +129,30 @@ export const ChatInterface: React.FC = () => {
 
   /* -------------------- RENDER -------------------- */
   return (
+    /** Contenedor principal: ocupa toda la pantalla y usa flex‑column */
     <div className="relative flex flex-col h-screen bg-background overflow-hidden">
+
       {/* ==== BACKGROUNDS (fixed, no afectan al layout) ==== */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
-      {/* ==== HEADER (flex‑none, siempre visible) ==== */}
-      <header className="flex-none flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md">
-        {/* LOGO (más grande) */}
+      {/* ==== HEADER (sticky, siempre visible) ==== */}
+      <header className="flex-none flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md sticky top-0 z-10">
         <img
           src={cfnLogo}
           alt="CFN Zumpango Tizayuca"
           className="h-9 sm:h-11 w-auto"
         />
-        {/* MENÚ DE HERRAMIENTAS */}
         <ToolsMenu onToolSelect={handleToolSelect} />
       </header>
 
-      {/* ==== MENSAJES (scrollable, ocupa resto) ==== */}
+      {/* ==== MENSAJES (scrollable, ocupa todo el espacio restante) ==== */}
+      {/* 1️⃣ El wrapper tiene flex‑1 y `overflow-y-auto` para que solo éste haga scroll.
+          2️⃣ Dentro usamos `ScrollArea` con `h-full` para que herede la altura. */}
       <section className="flex-1 min-h-0 overflow-y-auto">
         <ScrollArea className="h-full">
           {/* Fondo interno (solo visual) */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none"></div>
 
           <div className="relative px-4 sm:px-8 py-6">
             <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
@@ -169,9 +163,9 @@ export const ChatInterface: React.FC = () => {
         </ScrollArea>
       </section>
 
-      {/* ==== FOOTER (InputArea, siempre visible) ==== */}
+      {/* ==== FOOTER (sticky, siempre visible) ==== */}
       <footer
-        className="flex-none bg-background/95 backdrop-blur-xl"
+        className="flex-none bg-background/95 backdrop-blur-xl sticky bottom-0 z-10"
         style={{
           /* Espacio inferior para iOS notch + un pequeño margen */
           paddingTop: "0.5rem",

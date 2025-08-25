@@ -39,7 +39,7 @@ export const ChatInterface: React.FC = () => {
     {
       id: "1",
       content:
-        "Bienvenido. ¿Cómo puedo acompañarte en tu caminar con Cristo hoy?",
+        "Bienvenido a CFN AI, soy hermano David bot ¿Cómo puedo acompañarte en tu caminar con Cristo hoy?",
       type: "ai",
       timestamp: new Date(),
     },

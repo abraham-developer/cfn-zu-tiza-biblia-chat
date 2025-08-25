@@ -30,7 +30,7 @@ const postToAI = async (mensaje: string): Promise<string> => {
     const txt = await resp.text();
     throw new Error(`API error ${resp.status}: ${txt}`);
   }
-  // El endpoint devuelve texto plano, no JSON
+  // Texto plano
   return await resp.text();
 };
 
@@ -70,7 +70,6 @@ export const ChatInterface: React.FC = () => {
 
     sendingRef.current = true;
 
-    // Mensaje del usuario (se muestra una única vez)
     const userMsg: Message = {
       id: Date.now().toString(),
       content: inputValue,
@@ -79,7 +78,6 @@ export const ChatInterface: React.FC = () => {
     };
     setMessages((p) => [...p, userMsg]);
 
-    // Limpiamos el textarea y activamos spinner
     setInputValue("");
     setIsLoading(true);
 
@@ -145,26 +143,27 @@ export const ChatInterface: React.FC = () => {
 
       {/* ==== LOGO + AI‑CFN + MENÚ (posición absoluta) ==== */}
       <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-3 py-2 bg-background/80 backdrop-blur-md">
-        {/* LOGO (más grande que antes, pero fuera del flujo) */}
+        {/* LOGO (más grande que antes) */}
         <img
           src={cfnLogo}
           alt="CFN Zumpango Tizayuca"
           className="h-12 sm:h-14 w-auto"
         />
 
-       
+        {/* TEXTO CENTRAL */}
+        <span className="text-sm sm:text-base font-medium text-foreground">
+          AI – CFN
+        </span>
 
         {/* MENÚ DE HERRAMIENTAS */}
         <ToolsMenu onToolSelect={handleToolSelect} />
       </div>
 
-      {/* ==== ESPACIO RESERVADO PARA EL BARRA ABSOLUTA ==== */}
-      {/*  Altura aproximada del bloque superior (logo + texto + menú) = 2.5rem (py‑2) + logo h‑12 ≈ 3.5rem.
-          Usamos 4rem para estar seguros. */}
-      <div className="h-16"></div>
-
       {/* ==== ÁREA DE MENSAJES (scrollable) ==== */}
-      <section className="flex-1 min-h-0 overflow-y-auto relative">
+      {/*  No reservamos espacio fijo; el propio header ocupa su propio alto (py‑2). */}
+      <section className="flex-1 min-h-0 overflow-y-auto relative pt-12">
+        {/* `pt-12` deja un pequeño margen superior igual al alto del header
+           (≈ 3 rem) para que el contenido no quede bajo el logo. */}
         <ScrollArea className="h-full">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
 
@@ -177,8 +176,14 @@ export const ChatInterface: React.FC = () => {
         </ScrollArea>
       </section>
 
-      {/* ==== INPUT (siempre visible) ==== */}
-      <footer className="flex-none p-4 sm:p-8 bg-background/95 backdrop-blur-xl">
+      {/* ==== INPUT (siempre visible, con safe‑area) ==== */}
+      <footer
+        className="flex-none p-4 sm:p-6 bg-background/95 backdrop-blur-xl"
+        style={{
+          // En iOS con notch, respeta el área segura inferior
+          paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)",
+        }}
+      >
         <div className="max-w-5xl mx-auto">
           <InputArea
             value={inputValue}

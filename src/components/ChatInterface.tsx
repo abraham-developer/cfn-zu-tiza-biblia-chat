@@ -1,6 +1,5 @@
 // src/components/ChatInterface.tsx
 import React, { useState, useRef, useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToolsMenu } from "./ToolsMenu";
 import { MessageDisplay } from "./MessageDisplay";
 import { InputArea } from "./InputArea";
@@ -28,7 +27,7 @@ const postToAI = async (mensaje: string): Promise<string> => {
     const txt = await resp.text();
     throw new Error(`API error ${resp.status}: ${txt}`);
   }
-  return await resp.text(); // texto plano
+  return await resp.text();
 };
 
 export const ChatInterface: React.FC = () => {
@@ -52,7 +51,10 @@ export const ChatInterface: React.FC = () => {
 
   /* -------------------- SCROLL / FOCUS -------------------- */
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
   };
   useEffect(() => scrollToBottom(), [messages]);
   useEffect(() => inputRef.current?.focus(), []);
@@ -101,7 +103,6 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
-  /* -------------------- ENTER → ENVIAR -------------------- */
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -109,7 +110,7 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
-  /* -------------------- MAPEO DE HERRAMIENTAS -------------------- */
+  /* -------------------- HERRAMDAMIENTAS -------------------- */
   const handleToolSelect = (toolId: string) => {
     const toolMessages: Record<string, string> = {
       "verse-search": "Quiero buscar versículos bíblicos específicos",
@@ -122,66 +123,48 @@ export const ChatInterface: React.FC = () => {
     if (txt) {
       setInputValue(txt);
       inputRef.current?.focus();
-    } else {
-      console.warn(`Tool id "${toolId}" no tiene mensaje asociado`);
     }
   };
 
   /* -------------------- RENDER -------------------- */
   return (
-    /** Contenedor principal: ocupa toda la pantalla y usa flex‑column */
-    <div className="relative flex flex-col h-screen bg-background overflow-hidden">
-
-      {/* ==== BACKGROUNDS (fixed, no afectan al layout) ==== */}
+    <div className="flex flex-col h-screen overflow-hidden bg-background relative">
+      {/* ==== BACKGROUNDS (fixed) ==== */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
-      {/* ==== HEADER (sticky, siempre visible) ==== */}
-      <header className="flex-none flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <img
-          src={cfnLogo}
-          alt="CFN Zumpango Tizayuca"
-          className="h-9 sm:h-11 w-auto"
-        />
+      {/* ==== HEADER (altura fija) ==== */}
+      <header className="flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md h-14">
+        <img src={cfnLogo} alt="CFN" className="h-9 sm:h-11 w-auto" />
         <ToolsMenu onToolSelect={handleToolSelect} />
       </header>
 
-      {/* ==== MENSAJES (scrollable, ocupa todo el espacio restante) ==== */}
-      {/* 1️⃣ El wrapper tiene flex‑1 y `overflow-y-auto` para que solo éste haga scroll.
-          2️⃣ Dentro usamos `ScrollArea` con `h-full` para que herede la altura. */}
-      <section className="flex-1 min-h-0 overflow-y-auto">
-        <ScrollArea className="h-full">
-          {/* Fondo interno (solo visual) */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent pointer-events-none"></div>
-
-          <div className="relative px-4 sm:px-8 py-6">
-            <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
-              <MessageDisplay messages={messages} isLoading={isLoading} />
-              <div ref={messagesEndRef} />
-            </div>
+      {/* ==== MENSAJES (scroll interno) ==== */}
+      <section className="flex-1 overflow-y-auto">
+        <div className="relative px-4 sm:px-8 py-6 h-full">
+          <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
+            <MessageDisplay messages={messages} isLoading={isLoading} />
+            <div ref={messagesEndRef} />
           </div>
-        </ScrollArea>
+        </div>
       </section>
 
-      {/* ==== FOOTER (sticky, siempre visible) ==== */}
+      {/* ==== FOOTER (input, altura fija) ==== */}
       <footer
-        className="flex-none bg-background/95 backdrop-blur-xl sticky bottom-0 z-10"
+        className="bg-background/95 backdrop-blur-xl h-20 flex items-center px-2"
         style={{
-          /* Espacio inferior para iOS notch + un pequeño margen */
           paddingTop: "0.5rem",
           paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
         }}
       >
-        <div className="max-w-5xl mx-auto px-2">
-          <InputArea
-            value={inputValue}
-            onChange={setInputValue}
-            onSend={handleSendMessage}
-            onKeyPress={handleKeyPress}
-            isLoading={isLoading}
-            inputRef={inputRef}
-          />
-        </div>
+        <InputArea
+          value={inputValue}
+          onChange={setInputValue}
+          onSend={handleSendMessage}
+          onKeyPress={handleKeyPress}
+          isLoading={isLoading}
+          inputRef={inputRef}
+        />
       </footer>
     </div>
   );

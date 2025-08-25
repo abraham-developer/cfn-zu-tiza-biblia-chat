@@ -4,15 +4,12 @@ import { Bot, User, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-interface Message {
+/* ---------- INTERFAZ DE UN MENSAJE ---------- */
+export interface Message {
   id: string;
   content: string;
   type: "user" | "ai";
   timestamp: Date;
-}
-interface MessageDisplayProps {
-  messages: Message[];
-  isLoading: boolean;
 }
 
 /* ---------- Formateador de hora ---------- */
@@ -23,58 +20,65 @@ const formatTime = (date: Date) =>
 const markdownComponents = {
   // Título 1
   h1: ({ node, ...props }: any) => (
-    <h1 className="text-2xl sm:text-3xl font-bold text-foreground my-2" {...props} />
+    <h1
+      className="text-2xl sm:text-3xl font-bold text-foreground my-2 break-words"
+      {...props}
+    />
   ),
   // Título 2
   h2: ({ node, ...props }: any) => (
-    <h2 className="text-xl sm:text-2xl font-semibold text-foreground my-2" {...props} />
+    <h2
+      className="text-xl sm:text-2xl font-semibold text-foreground my-2 break-words"
+      {...props}
+    />
   ),
   // Título 3
   h3: ({ node, ...props }: any) => (
-    <h3 className="text-lg sm:text-xl font-medium text-foreground my-2" {...props} />
+    <h3
+      className="text-lg sm:text-xl font-medium text-foreground my-2 break-words"
+      {...props}
+    />
   ),
   // Párrafo
   p: ({ node, ...props }: any) => (
-    <p className="text-sm sm:text-base leading-relaxed mb-3" {...props} />
+    <p className="text-sm sm:text-base leading-relaxed mb-3 break-words" {...props} />
   ),
   // Negrita
   strong: ({ node, ...props }: any) => (
-    <strong className="font-semibold" {...props} />
+    <strong className="font-semibold break-words" {...props} />
   ),
   // Cita bloque
   blockquote: ({ node, ...props }: any) => (
     <blockquote
-      className="border-l-4 border-primary pl-4 italic text-muted-foreground my-2"
+      className="border-l-4 border-primary pl-4 italic text-muted-foreground my-2 break-words"
       {...props}
     />
   ),
-  // Lista ordenada
+  // Listas
   ol: ({ node, ...props }: any) => (
-    <ol className="list-decimal list-inside space-y-1 my-2" {...props} />
+    <ol className="list-decimal list-inside space-y-1 my-2 break-words" {...props} />
   ),
-  // Lista desordenada
   ul: ({ node, ...props }: any) => (
-    <ul className="list-disc list-inside space-y-1 my-2" {...props} />
+    <ul className="list-disc list-inside space-y-1 my-2 break-words" {...props} />
   ),
-  // Elemento de lista
   li: ({ node, ...props }: any) => (
-    <li className="text-sm sm:text-base text-foreground" {...props} />
+    <li className="text-sm sm:text-base text-foreground break-words" {...props} />
   ),
-  // Código (inline o bloque)
+  // Código
   code: ({ node, inline, ...props }: any) =>
     inline ? (
-      <code className="bg-gray-800 rounded px-1 py-0.5 text-sm sm:text-base">
+      <code className="bg-gray-800 rounded px-1 py-0.5 text-sm sm:text-base break-words">
         {props.children}
       </code>
     ) : (
       <pre className="bg-gray-900 rounded p-3 overflow-x-auto my-2">
-        <code className="text-sm sm:text-base">{props.children}</code>
+        <code className="text-sm sm:text-base break-words">{props.children}</code>
       </pre>
     ),
   // Enlaces
   a: ({ node, ...props }: any) => (
     <a
-      className="text-primary underline hover:text-primary/80"
+      className="text-primary underline hover:text-primary/80 break-words"
       target="_blank"
       rel="noopener noreferrer"
       {...props}
@@ -82,10 +86,10 @@ const markdownComponents = {
   ),
 };
 
-export const MessageDisplay: React.FC<MessageDisplayProps> = ({
-  messages,
-  isLoading,
-}) => {
+export const MessageDisplay: React.FC<{
+  messages: Message[];
+  isLoading: boolean;
+}> = ({ messages, isLoading }) => {
   return (
     <div className="space-y-8 sm:space-y-10">
       {messages.map((msg, idx) => (
@@ -119,6 +123,7 @@ export const MessageDisplay: React.FC<MessageDisplayProps> = ({
                     ? "bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground border-primary/50 shadow-xl shadow-primary/25"
                     : "glass-card text-foreground shadow-2xl border-white/20"
                 }
+                break-words overflow-wrap-anywhere
               `}
             >
               {/* overlay solo para mensajes del usuario */}
@@ -127,25 +132,26 @@ export const MessageDisplay: React.FC<MessageDisplayProps> = ({
               )}
 
               <div className="relative z-10">
-                {/* ==== CONTENIDO ==== */}
+                {/* ==== CONTENIDO MARKDOWN ==== */}
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  // Si quisieras permitir HTML dentro del markdown,
-                  // descomenta las siguientes líneas:
+                  // Si necesitas HTML dentro del markdown, descomenta:
                   // rehypePlugins={[rehypeRaw, rehypeSanitize]}
                   components={markdownComponents}
                 >
                   {msg.content}
                 </ReactMarkdown>
 
-                {/* ==== FOOTER (hora y etiqueta) ==== */}
+                {/* ==== FOOTER (hora + etiqueta) ==== */}
                 <div className="flex items-center justify-between mt-2">
                   <span
-                    className={`text-xs sm:text-sm ${
-                      msg.type === "user"
-                        ? "text-primary-foreground/60"
-                        : "text-muted-foreground"
-                    }`}
+                    className={`
+                      text-xs sm:text-sm ${
+                        msg.type === "user"
+                          ? "text-primary-foreground/60"
+                          : "text-muted-foreground"
+                      }
+                    `}
                   >
                     {formatTime(msg.timestamp)}
                   </span>
@@ -185,20 +191,20 @@ export const MessageDisplay: React.FC<MessageDisplayProps> = ({
               <span className="text-sm sm:text-base text-muted-foreground font-medium">
                 Consultando las Escrituras...
               </span>
-              {/* Puntos animados */}
+              {/* puntos animados */}
               <div className="flex gap-1 sm:gap-2">
                 <div
                   className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-accent rounded-full animate-bounce"
                   style={{ animationDelay: "0ms" }}
-                ></div>
+                />
                 <div
                   className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-accent rounded-full animate-bounce"
                   style={{ animationDelay: "200ms" }}
-                ></div>
+                />
                 <div
                   className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-accent rounded-full animate-bounce"
                   style={{ animationDelay: "400ms" }}
-                ></div>
+                />
               </div>
             </div>
           </div>

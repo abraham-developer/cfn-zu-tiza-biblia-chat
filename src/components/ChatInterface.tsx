@@ -14,7 +14,7 @@ interface Message {
 }
 
 /* ------------------------------------------------------------------
-   Helper: llama al webhook y devuelve texto plano.
+   Helper: llama al webhook y devuelve **texto plano**.
    ------------------------------------------------------------------ */
 const postToAI = async (mensaje: string): Promise<string> => {
   const url =
@@ -78,7 +78,7 @@ export const ChatInterface: React.FC = () => {
     };
     setMessages((p) => [...p, userMsg]);
 
-    // Limpiar textarea + spinner
+    // Limpiar textarea y mostrar spinner
     setInputValue("");
     setIsLoading(true);
 
@@ -137,17 +137,14 @@ export const ChatInterface: React.FC = () => {
 
   /* -------------------- RENDER -------------------- */
   return (
-    <div className="relative h-screen bg-background overflow-hidden">
+    <div className="relative flex flex-col h-screen bg-background overflow-hidden">
       {/* ==== BACKGROUNDS (fixed, no afectan al layout) ==== */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
-      {/* ==== HEADER (fixed‑top, ultra‑delgado) ==== */}
-      <header
-        className="fixed top-0 left-0 right-0 flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md z-10"
-        style={{ height: "calc(env(safe-area-inset-top) + 3rem)" }} // ≈ 48 px
-      >
-        {/* LOGO */}
+      {/* ==== HEADER (flex‑none, siempre visible) ==== */}
+      <header className="flex-none flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md">
+        {/* LOGO (grande) */}
         <img
           src={cfnLogo}
           alt="CFN Zumpango Tizayuca"
@@ -158,11 +155,26 @@ export const ChatInterface: React.FC = () => {
         <ToolsMenu onToolSelect={handleToolSelect} />
       </header>
 
-      {/* ==== FOOTER (fixed‑bottom) ==== */}
+      {/* ==== ÁREA DE MENSAJES (scrollable) ==== */}
+      <section className="flex-1 overflow-y-auto">
+        <ScrollArea className="h-full">
+          {/* Fondo interno (solo visual) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
+
+          <div className="relative px-4 sm:px-8 py-6">
+            <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
+              <MessageDisplay messages={messages} isLoading={isLoading} />
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+        </ScrollArea>
+      </section>
+
+      {/* ==== FOOTER (InputArea) – flex‑none ==== */}
       <footer
-        className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl z-10"
+        className="flex-none bg-background/95 backdrop-blur-xl"
         style={{
-          /* altura automática: solo el padding interno da espacio */
+          /* Asegura que en iPhone con notch quede espacio inferior */
           paddingTop: "0.5rem",
           paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
         }}
@@ -178,27 +190,6 @@ export const ChatInterface: React.FC = () => {
           />
         </div>
       </footer>
-
-      {/* ==== CONTENEDOR DE MENSAJES (solo scroll) ==== */}
-      <section
-        className="absolute left-0 right-0 overflow-y-auto"
-        style={{
-          top: "calc(env(safe-area-inset-top) + 3rem)", // bajo el header
-          bottom: "calc(env(safe-area-inset-bottom) + 1rem)", // encima del footer
-        }}
-      >
-        <ScrollArea className="h-full">
-          {/* Fondo interno (solo visual) */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
-
-          <div className="relative px-4 sm:px-8 py-6">
-            <div className="max-w-5xl mx-auto pb-4 sm:pb-6">
-              <MessageDisplay messages={messages} isLoading={isLoading} />
-              <div ref={messagesEndRef} />
-            </div>
-          </div>
-        </ScrollArea>
-      </section>
     </div>
   );
 };

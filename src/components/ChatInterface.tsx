@@ -30,8 +30,7 @@ const postToAI = async (mensaje: string): Promise<string> => {
     const txt = await resp.text();
     throw new Error(`API error ${resp.status}: ${txt}`);
   }
-  // Texto plano
-  return await resp.text();
+  return await resp.text(); // texto plano
 };
 
 export const ChatInterface: React.FC = () => {
@@ -70,6 +69,7 @@ export const ChatInterface: React.FC = () => {
 
     sendingRef.current = true;
 
+    // Mensaje del usuario
     const userMsg: Message = {
       id: Date.now().toString(),
       content: inputValue,
@@ -78,6 +78,7 @@ export const ChatInterface: React.FC = () => {
     };
     setMessages((p) => [...p, userMsg]);
 
+    // Limpiar textarea y mostrar spinner
     setInputValue("");
     setIsLoading(true);
 
@@ -136,18 +137,18 @@ export const ChatInterface: React.FC = () => {
 
   /* -------------------- RENDER -------------------- */
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden bg-background">
+    <div className="flex flex-col h-screen overflow-hidden bg-background relative">
       {/* ==== BACKGROUNDS (fixed, no afectan al scroll) ==== */}
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none"></div>
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] pointer-events-none"></div>
 
-      {/* ==== LOGO + AI‑CFN + MENÚ (posición absoluta) ==== */}
-      <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-3 py-2 bg-background/80 backdrop-blur-md">
-        {/* LOGO (más grande que antes) */}
+      {/* ==== HEADER (muy delgado) ==== */}
+      <header className="flex-none flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md">
+        {/* LOGO */}
         <img
           src={cfnLogo}
           alt="CFN Zumpango Tizayuca"
-          className="h-12 sm:h-14 w-auto"
+          className="h-8 sm:h-10 w-auto"
         />
 
         {/* TEXTO CENTRAL */}
@@ -157,14 +158,13 @@ export const ChatInterface: React.FC = () => {
 
         {/* MENÚ DE HERRAMIENTAS */}
         <ToolsMenu onToolSelect={handleToolSelect} />
-      </div>
+      </header>
 
       {/* ==== ÁREA DE MENSAJES (scrollable) ==== */}
-      {/*  No reservamos espacio fijo; el propio header ocupa su propio alto (py‑2). */}
-      <section className="flex-1 min-h-0 overflow-y-auto relative pt-12">
-        {/* `pt-12` deja un pequeño margen superior igual al alto del header
-           (≈ 3 rem) para que el contenido no quede bajo el logo. */}
+      <section className="flex-1 min-h-0 overflow-y-auto">
+        {/* ScrollArea (de shadcn) — solo necesita altura completa */}
         <ScrollArea className="h-full">
+          {/* Fondo degradado interno (no afecta al scroll) */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
 
           <div className="relative px-4 sm:px-8 py-6">
@@ -176,12 +176,11 @@ export const ChatInterface: React.FC = () => {
         </ScrollArea>
       </section>
 
-      {/* ==== INPUT (siempre visible, con safe‑area) ==== */}
+      {/* ==== INPUT (pegado al fondo, sin scroll) ==== */}
       <footer
-        className="flex-none p-4 sm:p-6 bg-background/95 backdrop-blur-xl"
+        className="flex-none p-2 sm:p-4 bg-background/95 backdrop-blur-xl"
         style={{
-          // En iOS con notch, respeta el área segura inferior
-          paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)",
+          paddingBottom: `calc(env(safe-area-inset-bottom) + 1rem)`,
         }}
       >
         <div className="max-w-5xl mx-auto">

@@ -9,7 +9,6 @@
         rel="stylesheet">
 
   <!-- ==== 1️⃣ FAVICON DE FUEGO (SVG inline, sin archivo externo) ==== -->
-  <!-- Nota: la cadena después de `data:image/svg+xml,` está URL‑encoded -->
   <link rel="icon"
         type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FF4500%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%202c0%2010-6%2013-6%2017a6%206%200%20012%200c0-4-6-7-6-17z%22%20/%3E%3C/svg%3E"
@@ -29,20 +28,76 @@
         id="android-icon-fire">
 
   <!-- ==== 4️⃣ No‑caché para el favicon (meta‑tags) ==== -->
-  <!-- Estas meta‑tags indican al navegador que intente no guardar en caché el icono -->
-  <meta http‑equiv="Cache‑Control" content="no‑store, no‑cache, must‑revalidate, max‑age=0">
-  <meta http‑equiv="Pragma" content="no‑cache">
-  <meta http‑equiv="Expires" content="0">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CFN Zumpango Tizayuca - Asistente Bíblico AI</title>
   <meta name="description"
         content="Chat con inteligencia artificial para preguntas bíblicas - CFN Zumpango Tizayuca" />
   <meta name="author" content="CFN Zumpany Tizayuca" />
+
+  <!-- -----------------------------------------------------------
+       ↓↓↓ INYECCIÓN DE CÓDIGO QUE CREA EL SESSION ID ↓↓↓
+       ----------------------------------------------------------- -->
+  <script>
+    /**
+     * 1️⃣  Genera un UUID v4 con la API nativa (crypto.randomUUID)
+     *     Si el navegador no la soporta, hace un fallback manual.
+     */
+    const generateUuid = () => {
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();                 // ✅ Navegadores modernos
+      }
+      // ---------- fallback manual (RFC‑4122) ----------
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      buf[6] = (buf[6] & 0x0f) | 0x40;  // version 4
+      buf[8] = (buf[8] & 0x3f) | 0x80;  // variante 10
+      const hex = Array.from(buf, b => b.toString(16).padStart(2, "0"));
+      return [
+        hex.slice(0, 4).join(""),
+        hex.slice(4, 6).join(""),
+        hex.slice(6, 8).join(""),
+        hex.slice(8, 10).join(""),
+        hex.slice(10, 16).join("")
+      ].join("-");
+    };
+
+    /**
+     * 2️⃣  Busca `sessionId` en la barra de direcciones.
+     *     Si no está, lo crea, lo inserta en la URL y actualiza
+     *     el historial sin recargar la página (`replaceState`).
+     *
+     *     El nombre del parámetro **debe ser exactamente** `sessionId`.
+     */
+    (function ensureSessionId() {
+      const url = new URL(window.location);
+      const current = url.searchParams.get("sessionId");
+
+      if (current) {
+        // Ya existe → nada que hacer.
+        return;
+      }
+
+      const newId = generateUuid();
+      url.searchParams.set("sessionId", newId);
+      // Reemplaza la URL actual (no crea una nueva entrada en historial)
+      window.history.replaceState(null, "", url.toString());
+
+      // Opcional: también guardamos una cookie para que el servidor
+      // pueda leerla (útil si tu backend usa cookies en vez de query‑string)
+      document.cookie = `sessionId=${newId}; Path=/; SameSite=Lax; ${
+        location.protocol === "https:" ? "Secure;" : ""
+      }`;
+    })();
+  </script>
 </head>
 
 <body>
   <div id="root"></div>
+  <!-- Tu bundle de React/TS -->
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

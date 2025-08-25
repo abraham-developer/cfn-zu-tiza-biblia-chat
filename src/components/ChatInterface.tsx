@@ -14,7 +14,7 @@ interface Message {
 }
 
 /* ------------------------------------------------------------------
-   Helper: llama al webhook y devuelve **texto plano**.
+   Helper: llama al webhook y devuelve texto plano.
    ------------------------------------------------------------------ */
 const postToAI = async (mensaje: string): Promise<string> => {
   const url =
@@ -78,7 +78,7 @@ export const ChatInterface: React.FC = () => {
     };
     setMessages((p) => [...p, userMsg]);
 
-    // Limpiar textarea y mostrar spinner
+    // Limpiar textarea + spinner
     setInputValue("");
     setIsLoading(true);
 
@@ -117,7 +117,7 @@ export const ChatInterface: React.FC = () => {
     }
   };
 
-  /* -------------------- MAPEO HERRAMIENTA → TEXTO -------------------- */
+  /* -------------------- MAPEO DE HERRAMIENTAS -------------------- */
   const handleToolSelect = (toolId: string) => {
     const toolMessages: Record<string, string> = {
       "verse-search": "Quiero buscar versículos bíblicos específicos",
@@ -144,19 +144,18 @@ export const ChatInterface: React.FC = () => {
 
       {/* ==== HEADER (flex‑none, siempre visible) ==== */}
       <header className="flex-none flex items-center justify-between px-3 py-1 bg-background/80 backdrop-blur-md">
-        {/* LOGO (grande) */}
+        {/* LOGO (más grande) */}
         <img
           src={cfnLogo}
           alt="CFN Zumpango Tizayuca"
           className="h-9 sm:h-11 w-auto"
         />
-
         {/* MENÚ DE HERRAMIENTAS */}
         <ToolsMenu onToolSelect={handleToolSelect} />
       </header>
 
-      {/* ==== ÁREA DE MENSAJES (scrollable) ==== */}
-      <section className="flex-1 overflow-y-auto">
+      {/* ==== MENSAJES (scrollable, ocupa resto) ==== */}
+      <section className="flex-1 min-h-0 overflow-y-auto">
         <ScrollArea className="h-full">
           {/* Fondo interno (solo visual) */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/3 to-transparent"></div>
@@ -170,11 +169,11 @@ export const ChatInterface: React.FC = () => {
         </ScrollArea>
       </section>
 
-      {/* ==== FOOTER (InputArea) – flex‑none ==== */}
+      {/* ==== FOOTER (InputArea, siempre visible) ==== */}
       <footer
         className="flex-none bg-background/95 backdrop-blur-xl"
         style={{
-          /* Asegura que en iPhone con notch quede espacio inferior */
+          /* Espacio inferior para iOS notch + un pequeño margen */
           paddingTop: "0.5rem",
           paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
         }}

@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine@sha256:7e2e2e7c2e2f3e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
